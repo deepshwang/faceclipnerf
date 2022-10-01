@@ -31,7 +31,7 @@ use_mapper = True
 hyper_sheet_output_dims = 4
 
 elastic_init_weight = 0.01
-max_steps = 100000
+max_steps = 7000
 #lr_decay_steps = 10000
 init_lr = 5e-4
 final_lr = 5e-5

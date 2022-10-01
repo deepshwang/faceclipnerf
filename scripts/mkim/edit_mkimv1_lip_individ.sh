@@ -24,7 +24,7 @@ for i in "${!TEXT_PROMPTS[@]}"; do
         --base_folder $EXPERIMENT_PATH_WITH_TIME \
         --ref_base_folder $REF_EXPERIMENT_PATH \
         --gin_bindings="data_dir='$DATASET_PATH'" \
-        --gin_configs configs/edit_test_local_lip_mkim.gin \
+        --gin_configs configs/edit_test_local_lip_mkim_large.gin \
         --target_text_prompt "${TEXT_PROMPTS[i]}" \
         --lambda_alphatv "${ALPHATV_LAMBDA[i]}" \
         --reference_warp_id $REFERENCE_WARP_ID \

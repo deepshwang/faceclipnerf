@@ -547,7 +547,10 @@ class EditingNerfModel(nn.Module):
     #  elif self.hyper_use_warp_embed: # False in editing model / true in original HyperNeRF official
     #    hyper_embed = warp_embed
     #  else:
-    hyper_embed = self.hyper_embed(jnp.zeros((points.shape[0], 1), dtype=jnp.uint32))
+    if self.hyper_use_warp_embed:
+      hyper_embed = warp_embed
+    else:
+      hyper_embed = self.hyper_embed(jnp.zeros((points.shape[0], 1), dtype=jnp.uint32))
 
     # Broadcast embeddings.
     if warp_embed is not None:

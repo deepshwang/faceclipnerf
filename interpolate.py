@@ -250,7 +250,7 @@ def process_iterator(tag: str,
       end_batch['metadata']['warp']=  170 * np.ones_like(batch['metadata']['warp'])
       end_batch['metadata'] = evaluation.encode_metadata(model, jax_utils.unreplicate(params), end_batch['metadata'])
       batch['metadata'] = evaluation.encode_metadata(model, jax_utils.unreplicate(params), batch['metadata'])
-      ratios = jnp.linspace(0.0, 1.0, num=31)
+      ratios = jnp.linspace(0.0, 1.0, num=50)
       for ratio in ratios:
         in_batch = copy.deepcopy(batch)
         noise_key = jax.random.PRNGKey(777)

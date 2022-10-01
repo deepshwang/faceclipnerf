@@ -405,7 +405,6 @@ def inject_params(ref_param: Dict, target_param: Dict, reference_warp_id: int = 
   for rp_key in ref_param['model'].keys():
     if rp_key in target_param['model'].keys() and rp_key != 'warp_embed':
       target_param['model'][rp_key] = ref_param['model'][rp_key]
-  
   # Initialize warp embedding with a pretrained warp embedding of a specific id
   if reference_warp_id is not None:
     init_embed = ref_param['model']['warp_embed']['embed']['embedding'][reference_warp_id]

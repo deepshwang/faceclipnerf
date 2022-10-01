@@ -233,6 +233,7 @@ class DataSource(abc.ABC):
                train_stride=1,
                val_stride=1,
                preload=True,
+               reference_camera_id=None,
                **_):
     self._train_ids = train_ids
     self._val_ids = val_ids
@@ -255,7 +256,8 @@ class DataSource(abc.ABC):
     self.metadata_dict = None
     self.reference_warp_id = None 
     self.reference_appearance_id = None
-
+    self.reference_camera_id = reference_camera_id
+  
   @property
   def all_ids(self):
     return sorted(itertools.chain(self.train_ids, self.val_ids))
@@ -634,7 +636,9 @@ class DataSource(abc.ABC):
     if scale_factor != 1.0:
       rgb = image_utils.rescale_image(rgb, scale_factor)
 
-    camera = self.load_camera(item_id, scale_factor)
+    cam_id = item_id if self.reference_camera_id is None else self.reference_camera_id
+    #camera = self.load_camera(item_id, scale_factor)
+    camera = self.load_camera(cam_id, scale_factor)
     data = {
         'camera_params': camera.get_parameters(),
         'rgb': rgb,
@@ -646,6 +650,8 @@ class DataSource(abc.ABC):
       data['metadata']['appearance'] = np.atleast_1d(
           self.get_appearance_id(in_id))
     if self.use_camera_id:
+      if self.reference_camera_id is not None:
+        item_id = self.get_camera_id(self.reference_camera_id)
       data['metadata']['camera'] = np.atleast_1d(self.get_camera_id(item_id))
     if self.use_warp_id:
       in_id = format(self.reference_warp_id, '06d') if self.reference_warp_id is not None else item_id

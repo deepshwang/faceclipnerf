@@ -7,6 +7,9 @@ REF_EXPERIMENT_PATH=/home/nas4_user/sungwonhwang/logs/hypernerf/${PROJ}
 
 EXPERIMENT_PATH=/home/nas4_user/sungwonhwang/logs/hypernerf/edit_${PROJ}
 
+mkdir -p ${REF_EXPERIMENT_PATH}
+mkdir -p ${EXPERIMENT_PATH}
+
 EXPERIMENT_PATH_WITH_TIME=${EXPERIMENT_PATH}"_"$(date +"%d-%m-%Y_%T")
 
 LOG_FILENAME=$REF_EXPERIMENT_PATH/edit_log_nerf_$(date +"%d-%m-%Y_%T").txt

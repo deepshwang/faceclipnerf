@@ -229,9 +229,9 @@ def train_step(model: models.EditingNerfModel,
     #     losses.append(loss)
     #   rgb_loss = jnp.sum(jnp.asarray(losses), axis=0).mean()
     # else:
-    #   rgb_loss = ((model_out['rgb'][..., :3] - batch['rgb'][..., :3])**2).mean()
-    # stats = {'loss/rgb': rgb_loss}
-    # loss += scalar_params.lambda_refrgb * rgb_loss
+    rgb_loss = ((model_out['rgb'][..., :3] - batch['rgb'][..., :3])**2).mean()
+    stats = {'loss/rgb': rgb_loss}
+    loss += scalar_params.lambda_refrgb * rgb_loss
     
     # Clip loss
     rgb_image = jnp.reshape(model_out['rgb'][..., :3], (batch_shape[0], batch_shape[1], -1))

@@ -435,8 +435,8 @@ def inject_params_nerf(ref_param: Dict, target_param: Dict, reference_warp_id: i
   ref_param = flax.core.frozen_dict.unfreeze(ref_param)
   target_param = flax.core.frozen_dict.unfreeze(target_param)
   for rp_key in ref_param['model'].keys():
-    if rp_key == 'warp_field':
-      target_param['model'][rp_key] = ref_param['model'][rp_key]
+    if rp_key in target_param['model'].keys() and rp_key != 'warp_embed' and rp_key != 'hyper_embed':
+      target_param['model'][rp_key] = ref_param['model'][rp_key] 
   if reference_warp_id is not None:
     init_embed = ref_param['model']['warp_embed']['embed']['embedding'][reference_warp_id]
     target_param['model']['warp_embed']['embed']['embedding'] = init_embed[jnp.newaxis, ...]

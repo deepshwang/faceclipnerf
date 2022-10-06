@@ -6,7 +6,7 @@ REF_EXPERIMENT_PATH=/home/nas4_user/sungwonhwang/logs/hypernerf/jhyungv1_nolip
 
 EXPERIMENT_PATH=/home/nas4_user/sungwonhwang/logs/hypernerf/edit_jhyungv1
 
-LOG_FILENAME=$REF_EXPERIMENT_PATH/edit_log_vanilla_$(date +"%d-%m-%Y_%T").txt
+LOG_FILENAME=$REF_EXPERIMENT_PATH/edit_log_vanilla3_$(date +"%d-%m-%Y_%T").txt
 
 TEXT_PROMPTS=("happy face") 
 REFERENCE_WARP_ID=3

@@ -551,7 +551,6 @@ class EditingNerfModel(nn.Module):
       hyper_embed = warp_embed
     else:
       hyper_embed = self.hyper_embed(jnp.zeros((points.shape[0], 1), dtype=jnp.uint32))
-
     # Broadcast embeddings.
     if warp_embed is not None:
       warp_embed = jnp.broadcast_to(

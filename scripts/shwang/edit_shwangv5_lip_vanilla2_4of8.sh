@@ -6,7 +6,7 @@ REF_EXPERIMENT_PATH=/home/nas4_user/sungwonhwang/logs/hypernerf/shwangv5_nolip
 
 EXPERIMENT_PATH=/home/nas4_user/sungwonhwang/logs/hypernerf/edit_shwangv5
 
-LOG_FILENAME=$REF_EXPERIMENT_PATH/edit_log_vanilla_$(date +"%d-%m-%Y_%T").txt
+LOG_FILENAME=$REF_EXPERIMENT_PATH/edit_log_vanilla2_$(date +"%d-%m-%Y_%T").txt
 
 TEXT_PROMPTS=("scared face") 
 REFERENCE_WARP_ID=9

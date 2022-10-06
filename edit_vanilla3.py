@@ -164,6 +164,7 @@ def main(argv):
   if exp_config.subname:
     exp_dir = exp_dir / exp_config.subname
   #exp_dir = gpath.GPath(str(exp_dir) + dt_string)
+  train_config.target_text_prompt = FLAGS.target_text_prompt[0]
   summary_dir = exp_dir / 'summaries' / 'train'
   checkpoint_dir = exp_dir / 'checkpoints'
   # Retrieve reference model directory information

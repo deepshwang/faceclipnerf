@@ -56,6 +56,7 @@ flags.DEFINE_string('base_folder', None, 'where to store ckpts and logs')
 flags.mark_flag_as_required('base_folder')
 flags.DEFINE_multi_string('gin_bindings', None, 'Gin parameter bindings.')
 flags.DEFINE_multi_string('gin_configs', (), 'Gin config files.')
+flags.DEFINE_multi_string('reference_warp_id', None, 'Warp embed id to use.')
 FLAGS = flags.FLAGS
 
 config.update('jax_log_compiles', True)
@@ -225,14 +226,18 @@ def sample_specific_metadata(datasource, batch, step, appearance_id=None, warp_i
     if appearance_id is None:
       appearance_id = random.choice(
           test_rng, jnp.asarray(datasource.appearance_ids))
-    logging.info('\tUsing appearance_id = %d', appearance_id)
-    metadata['appearance'] = jnp.full(shape, fill_value=appearance_id,
+    else:
+      appearance_id = datasource.train_ids[appearance_id]
+    logging.info('\tUsing appearance_id = %d', int(appearance_id))
+    metadata['appearance'] = jnp.full(shape, fill_value=jnp.asarray(int(appearance_id)),
                                       dtype=jnp.uint32)
   if datasource.use_warp_id:
     if warp_id is None:
       warp_id = random.choice(test_rng, jnp.asarray(datasource.warp_ids))
-    logging.info('\tUsing warp_id = %d', warp_id)
-    metadata['warp'] = jnp.full(shape, fill_value=warp_id, dtype=jnp.uint32)
+    else:
+      warp_id = datasource.train_ids[warp_id]
+    logging.info('\tUsing warp_id = %d', int(warp_id))
+    metadata['warp'] = jnp.full(shape, fill_value=jnp.asarray(int(warp_id)), dtype=jnp.uint32)
   if datasource.use_camera_id:
     camera_id = random.choice(test_rng, jnp.asarray(datasource.camera_ids))
     logging.info('\tUsing camera_id = %d', camera_id)
@@ -257,7 +262,9 @@ def process_iterator(tag: str,
                      summary_writer: tensorboard.SummaryWriter,
                      save_dir: Optional[gpath.GPath],
                      datasource: datasets.DataSource,
-                     model: models.NerfModel):
+                     model: models.NerfModel,
+                     reference_warp_id: int,
+                     reference_appearance_id: int):
   """Process a dataset iterator and compute metrics."""
   params = state.optimizer.target['model']
   save_dir = save_dir / f'{step:08d}' / tag if save_dir else None
@@ -278,7 +285,7 @@ def process_iterator(tag: str,
     # batch['metadata']['encoded_hyper'] = cache_batch['metadata']['encoded_hyper']
     if tag == 'test':
       #batch['metadata'] = sample_random_metadata(datasource, batch, step)
-      batch['metadata'] = sample_specific_metadata(datasource, batch, step, appearance_id=19, warp_id=19)
+      batch['metadata'] = sample_specific_metadata(datasource, batch, step, appearance_id=reference_appearance_id, warp_id=reference_warp_id)
 
 
     batch['metadata'] = evaluation.encode_metadata(
@@ -361,7 +368,8 @@ def main(argv):
   exp_config = configs.ExperimentConfig()
   train_config = configs.TrainConfig()
   eval_config = configs.EvalConfig()
-
+  reference_warp_id = int(FLAGS.reference_warp_id[0])
+  
   # Get directory information.
   exp_dir = gpath.GPath(FLAGS.base_folder)
   if exp_config.subname:
@@ -414,12 +422,15 @@ def main(argv):
           dummy_model.nerf_embed_key == 'appearance'
           or dummy_model.hyper_embed_key == 'appearance'),
       use_camera_id=dummy_model.nerf_embed_key == 'camera',
-      use_time=dummy_model.warp_embed_key == 'time')
+      use_time=dummy_model.warp_embed_key == 'time',
+      reference_warp_id=reference_warp_id,
+      reference_appearance_id=reference_warp_id)
 
   # Get training IDs to evaluate.
   #train_eval_ids = utils.strided_subset(
   #    datasource.train_ids, eval_config.num_train_eval)
   train_eval_ids = datasource.train_ids
+  #import ipdb; ipdb.set_trace()
   train_eval_iter = datasource.create_iterator(train_eval_ids, batch_size=0)
   #val_eval_ids = utils.strided_subset(
   #    datasource.val_ids, eval_config.num_val_eval)
@@ -536,7 +547,9 @@ def main(argv):
                        summary_writer=summary_writer,
                        save_dir=save_dir,
                        datasource=datasource,
-                       model=model)
+                       model=model,
+                       reference_warp_id=reference_warp_id,
+                       reference_appearance_id=reference_warp_id)
 
     if save_dir:
       delete_old_renders(renders_dir, eval_config.max_render_checkpoints)

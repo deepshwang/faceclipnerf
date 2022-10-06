@@ -3,13 +3,13 @@ set -x
 ##### [0] Set data directory & variable #####
 #PARAMETERS
 DATA_DIR="/home/user1/data/hypernerf"
-CAPTURE_NAME="eheov1"
-n=4 #sampling rate (flattening)
+CAPTURE_NAME="shwang2v1"
+n=4.5 #sampling rate (flattening)
 
 #video flattening
 PROJ_DIR=$DATA_DIR/$CAPTURE_NAME
 mkdir $PROJ_DIR
-VIDEO_PATH=$DATA_DIR/$CAPTURE_NAME/$CAPTURE_NAME".mp4"
+VIDEO_PATH=$DATA_DIR/$CAPTURE_NAME/$CAPTURE_NAME".mov"
 RGB_RAW_DIR=$DATA_DIR/$CAPTURE_NAME/"rgb-raw"
 OUT_PATTERN=$RGB_RAW_DIR"/%06d.png"
 FILTERS="mpdecimate,setpts=N/FRAME_RATE/TB,scale=iw:ih,yadif"

@@ -9,7 +9,7 @@ EXPERIMENT_PATH=/home/nas4_user/sungwonhwang/logs/hypernerf/edit_$PROJ_NAME
 
 EXPERIMENT_PATH_WITH_TIME=${EXPERIMENT_PATH}"_"$(date +"%d-%m-%Y_%T")
 
-LOG_FILENAME=$REF_EXPERIMENT_PATH/edit_log_$(date +"%d-%m-%Y_%T").txt
+LOG_FILENAME=$REF_EXPERIMENT_PATH/edit_log_fake_$(date +"%d-%m-%Y_%T").txt
 
 #TEXT_PROMPTS=("happy face" "sad face" "surprised face" "fearful face" "disgusted face" "angry face" "face with contempt" "crying face" "happily surprised face" "sleeping face")
 #ALPHATV_LAMBDA=("100" "1" "1" "1" "1" "1" "1" "1" "100" "1")

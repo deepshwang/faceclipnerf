@@ -3,8 +3,8 @@ set -x
 ##### [0] Set data directory & variable #####
 #PARAMETERS
 DATA_DIR="/home/user1/data/hypernerf"
-CAPTURE_NAME="eheov1"
-n=4 #sampling rate (flattening)
+CAPTURE_NAME="mhanv1"
+n=4.5 #sampling rate (flattening)
 
 #video flattening
 PROJ_DIR=$DATA_DIR/$CAPTURE_NAME

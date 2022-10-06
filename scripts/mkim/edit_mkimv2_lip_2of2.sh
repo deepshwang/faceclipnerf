@@ -11,8 +11,8 @@ EXPERIMENT_PATH_WITH_TIME=${EXPERIMENT_PATH}"_"$(date +"%d-%m-%Y_%T")
 
 LOG_FILENAME=$REF_EXPERIMENT_PATH/edit_log_$(date +"%d-%m-%Y_%T").txt
 
-TEXT_PROMPTS=("sleeping face" "happy face")
-ALPHATV_LAMBDA=("50" "1")
+TEXT_PROMPTS=("crying face" "happily surprised face")
+ALPHATV_LAMBDA=("1" "1")
 REFERENCE_WARP_ID=79
 ANCHOR_EMBEDDING_IDS=79,100,184,279
 for i in "${!TEXT_PROMPTS[@]}"; do

@@ -366,8 +366,8 @@ def main(argv):
           or dummy_model.hyper_embed_key == 'appearance'),
       use_camera_id=dummy_model.nerf_embed_key == 'camera',
       use_time=dummy_model.warp_embed_key == 'time',
-      reference_warp_id=9,
-      reference_appearance_id=9,
+      #reference_warp_id=9,
+      #reference_appearance_id=9,
       load_refrgb=True)
 
   # Get training IDs to evaluate.

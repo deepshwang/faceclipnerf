@@ -222,8 +222,8 @@ def main(argv):
           or dummy_model.hyper_embed_key == 'appearance'),
       use_camera_id=dummy_model.nerf_embed_key == 'camera',
       use_time=dummy_model.warp_embed_key == 'time',
-      reference_warp_id=reference_warp_id,
-      reference_appearance_id=reference_warp_id,
+      #reference_warp_id=datasource.train_ids[reference_warp_id],
+      #reference_appearance_id=datasource.train_ids[reference_warp_id],
       load_refrgb=True)
   # Create Jax iterator.
   logging.info('Creating dataset iterator.')

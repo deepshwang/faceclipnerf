@@ -1,6 +1,6 @@
 #!/bin/bash
 export CUDA_VISIBLE_DEVICES=${1:-0}
-PROJ_NAME=mkimv2
+PROJ_NAME=mkimv1
 DATASET_PATH=/home/nas4_user/sungwonhwang/data/hypernerf/$PROJ_NAME
 
 REF_EXPERIMENT_PATH=/home/nas4_user/sungwonhwang/logs/hypernerf/$PROJ_NAME
@@ -11,13 +11,13 @@ EXPERIMENT_PATH_WITH_TIME=${EXPERIMENT_PATH}"_"$(date +"%d-%m-%Y_%T")
 
 LOG_FILENAME=$REF_EXPERIMENT_PATH/edit_log_$(date +"%d-%m-%Y_%T").txt
 
-TEXT_PROMPTS=("sleeping face" "happy face")
-ALPHATV_LAMBDA=("50" "1")
-REFERENCE_WARP_ID=79
-ANCHOR_EMBEDDING_IDS=79,100,184,279
+TEXT_PROMPTS=("happily surprised face")
+ALPHATV_LAMBDA=("10")
+REFERENCE_WARP_ID=2
+ANCHOR_EMBEDDING_IDS=2,91,162,283
 for i in "${!TEXT_PROMPTS[@]}"; do
     EXPERIMENT_PATH_WITH_TIME=${EXPERIMENT_PATH}"_"$(date +"%d-%m-%Y_%T")
-    echo "Training prompt:  "${TEXT_PROMPTS[i]}" | alphatv: "${ALPHATV_LAMBDA[i]}" | Result Path:  "${EXPERIMENT_PATH_WITH_TIME} >> $LOG_FILENAME
+    echo "Training prompt:  "${TEXT_PROMPTS[i]}" Alpha TV: "${ALPHATV_LAMBDA[i]}"| Result Path:  "${EXPERIMENT_PATH_WITH_TIME} >> $LOG_FILENAME
     python edit.py \
         --base_folder $EXPERIMENT_PATH_WITH_TIME \
         --ref_base_folder $REF_EXPERIMENT_PATH \

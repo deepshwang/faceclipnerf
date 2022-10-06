@@ -599,7 +599,7 @@ if __name__ == "__main__":
     positions = []
    
     # Circular Movement
-    y_ratio = 0.8
+    y_ratio = 0.6
     for angle in angles:
       x = np.cos(angle) * radius * xs
       y = np.sin(angle) * radius * ys

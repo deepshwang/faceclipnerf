@@ -234,6 +234,8 @@ class DataSource(abc.ABC):
                val_stride=1,
                preload=True,
                reference_camera_id=None,
+               reference_warp_id=None,
+               reference_appearance_id=None,
                **_):
     self._train_ids = train_ids
     self._val_ids = val_ids
@@ -254,8 +256,8 @@ class DataSource(abc.ABC):
         use_appearance_id, use_camera_id, use_warp_id, use_depth, use_time,
         train_stride, val_stride)
     self.metadata_dict = None
-    self.reference_warp_id = None 
-    self.reference_appearance_id = None
+    self.reference_warp_id = reference_warp_id 
+    self.reference_appearance_id = reference_appearance_id
     self.reference_camera_id = reference_camera_id
   
   @property
@@ -646,7 +648,8 @@ class DataSource(abc.ABC):
     }
 
     if self.use_appearance_id:
-      in_id = format(self.reference_appearance_id, '06d') if self.reference_appearance_id is not None else item_id
+      #in_id = format(self.reference_appearance_id, '06d') if self.reference_appearance_id is not None else item_id
+      in_id = self.train_ids[self.reference_appearance_id] if self.reference_appearance_id is not None else item_id
       data['metadata']['appearance'] = np.atleast_1d(
           self.get_appearance_id(in_id))
     if self.use_camera_id:
@@ -654,7 +657,8 @@ class DataSource(abc.ABC):
         item_id = self.get_camera_id(self.reference_camera_id)
       data['metadata']['camera'] = np.atleast_1d(self.get_camera_id(item_id))
     if self.use_warp_id:
-      in_id = format(self.reference_warp_id, '06d') if self.reference_warp_id is not None else item_id
+      #in_id = format(self.reference_warp_id, '06d') if self.reference_warp_id is not None else item_id
+      in_id = self.train_ids[self.reference_warp_id] if self.reference_warp_id is not None else item_id
       data['metadata']['warp'] = np.atleast_1d(self.get_warp_id(in_id))
     if self.use_time:
       data['metadata']['time'] = np.atleast_1d(self.get_time(item_id))

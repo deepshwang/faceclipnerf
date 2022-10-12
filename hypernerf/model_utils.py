@@ -419,6 +419,33 @@ def inject_params(ref_param: Dict, target_param: Dict, reference_warp_id: int = 
   target_param = flax.core.frozen_dict.freeze(target_param)
   return target_param
 
+def inject_params_nerfies(ref_param: Dict, target_param: Dict, reference_warp_id: int = None, reference_hyper_id: list = None):
+  """Inject reference parameters (model to be edited) to targt parmaeter.
+  
+  The only difference in keys should be 'hyper_mapper_mlp'
+
+  Args:
+    ref_param: reference parameter
+    target_parameter: larger parameter set to be injected to 
+  
+  Returns:
+    target_param with values of overlapping keys copied from ref_param 
+  """
+  # Copy overlapping parameters
+  ref_param = flax.core.frozen_dict.unfreeze(ref_param)
+  target_param = flax.core.frozen_dict.unfreeze(target_param)
+  for rp_key in ref_param['model'].keys():
+    if rp_key in target_param['model'].keys() and rp_key != 'warp_embed':
+      target_param['model'][rp_key] = ref_param['model'][rp_key]
+  # Initialize warp embedding with a pretrained warp embedding of a specific id
+  if reference_warp_id is not None:
+    init_embed = ref_param['model']['warp_embed']['embed']['embedding'][reference_warp_id]
+    target_param['model']['warp_embed']['embed']['embedding'] = init_embed[jnp.newaxis, ...]
+  #else:
+  #  init_embed = jnp.mean(ref_param['model']['warp_embed']['embed']['embedding'], axis=0)
+  target_param = flax.core.frozen_dict.freeze(target_param)
+  return target_param
+
 def inject_params_nerf(ref_param: Dict, target_param: Dict, reference_warp_id: int = None, reference_hyper_id: list = None):
   """Inject reference parameters (model to be edited) to targt parmaeter.
   

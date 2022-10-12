@@ -121,6 +121,7 @@ class NerfModel(nn.Module):
   nerf_rgb_branch_width: int = 128
   nerf_skips: Tuple[int] = (4,)
   dense_fn: Callable[..., nn.Module] = nn.Dense
+  field_dense_fn: Callable[..., nn.Module] = nn.Dense
 
   # NeRF rendering.
   num_coarse_samples: int = 196
@@ -280,11 +281,11 @@ class NerfModel(nn.Module):
       if not self.hyper_use_warp_embed: # Use the "latent deformation code" to map point to ambient slicing surface
         self.hyper_embed = self.hyper_embed_cls(
             num_embeddings=self.num_hyper_embeds)
-      self.hyper_sheet_mlp = self.hyper_sheet_mlp_cls()
+      self.hyper_sheet_mlp = self.hyper_sheet_mlp_cls(dense_fn=self.field_dense_fn)
 
     # Warping network
     if self.use_warp:
-      self.warp_field = self.warp_field_cls()
+      self.warp_field = self.warp_field_cls(dense_fn=self.field_dense_fn)
 
 
     # Nerf MLPs

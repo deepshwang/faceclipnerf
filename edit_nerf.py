@@ -39,7 +39,7 @@ from hypernerf import configs
 from hypernerf import datasets
 from hypernerf import gpath
 from hypernerf import model_utils
-from hypernerf import editing_models_vanilla as models
+from hypernerf import nerf_models as models
 from hypernerf import schedules
 from hypernerf import editing_vanilla as training
 from hypernerf import utils
@@ -157,6 +157,7 @@ def main(argv):
   train_config = configs.TrainConfig()
   dummy_model = models.EditingNerfModel({}, 0, 0)
   reference_warp_id = int(FLAGS.reference_warp_id[0])
+  train_config.target_text_prompt = FLAGS.target_text_prompt[0]
   # Get directory information.
   #seoul_tz = pytz.timezone("Asia/Seoul")
   #now = datetime.now(seoul_tz)
@@ -239,8 +240,8 @@ def main(argv):
   # Inject reference model parameter (pre-trained model) to our editing state object
   logging.info('Loading pretrained reference model params.')
   ref_state = checkpoints.restore_checkpoint(ref_checkpoint_dir, target=None)
-  ref_params = ref_state['optimizer']['target']
-  params = model_utils.inject_params_nerf(ref_params, params, reference_warp_id = reference_warp_id)
+  params = ref_state['optimizer']['target']
+  #params = model_utils.inject_params_nerf(ref_params, params, reference_warp_id = reference_warp_id)
 
   points_iter = None
   if train_config.use_background_loss:
@@ -260,12 +261,6 @@ def main(argv):
   
   # Defining optimizer. Freeze all except hyper id to be trained 
   logging.info('Loading optimizers.')
-  nerf_optimizer_def = optim.Adam(learning_rate_sched(0))
-  nerf_traverser = traverse_util.ModelParamTraversal(lambda path, _: 'nerf_mlps_fine' in path)
-  coarse_nerf_optimizer_def = optim.Adam(learning_rate_sched(0))
-  coarse_nerf_traverser = traverse_util.ModelParamTraversal(lambda path, _: 'nerf_mlps_coarse' in path)
-  optimizer_def = optim.MultiOptimizer((nerf_traverser, nerf_optimizer_def), (coarse_nerf_traverser, coarse_nerf_optimizer_def))
-  
   optimizer_def = optim.Adam(learning_rate_sched(0))
   optimizer = optimizer_def.create(params)
   state = model_utils.TrainState(

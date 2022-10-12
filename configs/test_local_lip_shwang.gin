@@ -36,6 +36,7 @@ TrainConfig.hyper_alpha_schedule = {
 }
 
 NerfModel.dense_fn = @LipDense
+NerfModel.field_dense_fn = @nn.Dense
 
 NerfModel.hyper_slice_method = 'bendy_sheet'
 NerfModel.hyper_sheet_mlp_cls = @HyperSheetMLP

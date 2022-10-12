@@ -12,7 +12,7 @@ EXPERIMENT_PATH_WITH_TIME=${EXPERIMENT_PATH}"_"$(date +"%d-%m-%Y_%T")
 LOG_FILENAME=$REF_EXPERIMENT_PATH/edit_log_$(date +"%d-%m-%Y_%T").txt
 
 #TEXT_PROMPTS=("happy face" "sad face" "surprised face" "scared face" "disgusted face")
-TEXT_PROMPTS=("scared face")
+TEXT_PROMPTS=("disgusted face") # scared face
 ALPHATV_LAMBDA=("100")
 REFERENCE_WARP_ID=5
 ANCHOR_EMBEDDING_IDS=5,109,178,296

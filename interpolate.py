@@ -50,7 +50,7 @@ from hypernerf import visualization as viz
 from hypernerf import debug
 
 from tqdm import tqdm
-
+import cv2
 
 
 import pdb
@@ -63,6 +63,8 @@ flags.DEFINE_string('base_folder', None, 'where to store ckpts and logs')
 flags.mark_flag_as_required('base_folder')
 flags.DEFINE_multi_string('gin_bindings', None, 'Gin parameter bindings.')
 flags.DEFINE_multi_string('gin_configs', (), 'Gin config files.')
+flags.DEFINE_multi_string('start_warp_id', None, 'start warp id.')
+flags.DEFINE_multi_string('end_warp_id', None, 'end warp id.')
 FLAGS = flags.FLAGS
 
 config.update('jax_log_compiles', True)
@@ -234,42 +236,58 @@ def process_iterator(tag: str,
                      save_dir: Optional[gpath.GPath],
                      datasource: datasets.DataSource,
                      model: models.NerfModel,
-                     edit_warp_id: int):
+                     start_warp_id: int,
+                     end_warp_id: int):
   """Process a dataset iterator and compute metrics."""
   params = state.optimizer.target['model']
-  interp_save_dir = save_dir / 'interp'  / '{}x'.format(datasource.image_scale) / '{}'.format(edit_warp_id) 
+  interp_save_dir = save_dir / 'interp'  / '{}x'.format(datasource.image_scale) / '{}_{}'.format(start_warp_id, end_warp_id) 
   os.makedirs(interp_save_dir, exist_ok=True)
   meters = collections.defaultdict(utils.ValueMeter)
   for i, (item_id, batch) in tqdm(enumerate(zip(item_ids, iterator))):
     
     #if not os.path.exists(depth_filename) or not os.path.exists(refrgb_filename) or not os.path.exists(refrgb_imgname):
-    if True:
+    if i==0:
       logging.info('[%s:%d/%d] Processing %s ', tag, i+1, len(item_ids), item_id)
       extra_images = None
       end_batch = copy.deepcopy(batch)
-      end_batch['metadata']['warp']=  170 * np.ones_like(batch['metadata']['warp'])
+      end_batch['metadata']['warp']=  end_warp_id * np.ones_like(batch['metadata']['warp'])
       end_batch['metadata'] = evaluation.encode_metadata(model, jax_utils.unreplicate(params), end_batch['metadata'])
       batch['metadata'] = evaluation.encode_metadata(model, jax_utils.unreplicate(params), batch['metadata'])
-      ratios = jnp.linspace(0.0, 1.0, num=50)
+      ratios = jnp.linspace(0.0, 1.0, num=61)
+      video_dict = {'rgb':[]}
       for ratio in ratios:
         in_batch = copy.deepcopy(batch)
         noise_key = jax.random.PRNGKey(777)
         noise = jax.random.normal(noise_key, shape=(1, 1, 8))
         noise = noise / (jnp.linalg.norm(noise) * 10)
         #in_batch['metadata']['encoded_warp'] = (1.0 - ratio) * in_batch['metadata']['encoded_warp'] + ratio * end_batch['metadata']['encoded_warp']
-        in_batch['metadata']['encoded_hyper'] = (1.0 - ratio) * in_batch['metadata']['encoded_hyper'] + ratio * end_batch['metadata']['encoded_hyper'] + noise
+        #in_batch['metadata']['encoded_hyper'] = (1.0 - ratio) * in_batch['metadata']['encoded_hyper'] + ratio * end_batch['metadata']['encoded_hyper'] + noise
+        #in_batch['metadata']['encoded_warp'] = (1.0 - ratio) * in_batch['metadata']['encoded_warp'] + ratio * end_batch['metadata']['encoded_warp']
+        in_batch['metadata']['encoded_hyper'] = (1.0 - ratio) * in_batch['metadata']['encoded_hyper'] + ratio * end_batch['metadata']['encoded_hyper']
         model_out = render_fn(state, in_batch, rng=rng)
         depth = model_out['depth']
         rgb = model_out['rgb'][..., :3]
+        video_dict['rgb'].append(np.array(model_out['rgb']))
         disp_exp_viz = viz.colorize(1.0 / depth)
-        interp_imgname = str(interp_save_dir /  "rgb_{}_{}.png".format(str(ratio), item_id))
+        interp_imgname = str(interp_save_dir /  "rgb_{:.2f}.png".format(ratio))
         interp_depth_imgname = str(interp_save_dir /  "depth_{}_{}.png".format(str(ratio), item_id))
         image_utils.save_image(interp_imgname,
                               image_utils.image_to_uint8(rgb))
-        image_utils.save_image(interp_depth_imgname,
-                              image_utils.image_to_uint8(disp_exp_viz))
-      debug.pdb.set_trace()
-    
+        #image_utils.save_image(interp_depth_imgname,
+        #                      image_utils.image_to_uint8(disp_exp_viz))
+      
+      size = video_dict['rgb'][0].shape[:2]
+      for k, frame_list in video_dict.items():
+        fname = str(interp_save_dir / "{}.mp4".format(k))
+        print("Writing test camera video at: ", fname)
+        fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+        out = cv2.VideoWriter(fname, fourcc, 20.0, (size[1], size[0]))
+        for frame in frame_list:
+          frame = (255*frame).astype(np.uint8)
+          frame = frame[...,::-1]
+          out.write(frame)
+        out.release()    
+
 def delete_old_renders(render_dir, max_renders):
   render_paths = sorted(render_dir.iterdir())
   paths_to_delete = render_paths[:-max_renders]
@@ -295,6 +313,8 @@ def main(argv):
   exp_config = configs.ExperimentConfig()
   train_config = configs.TrainConfig()
   eval_config = configs.EvalConfig()
+  start_warp_id = int(FLAGS.start_warp_id[0])
+  end_warp_id = int(FLAGS.end_warp_id[0])
 
   # Get directory information.
   exp_dir = gpath.GPath(FLAGS.base_folder)
@@ -349,8 +369,8 @@ def main(argv):
           or dummy_model.hyper_embed_key == 'appearance'),
       use_camera_id=dummy_model.nerf_embed_key == 'camera',
       use_time=dummy_model.warp_embed_key == 'time',
-      edit_warp_id=18,
-      edit_appearance_id=18)
+      reference_warp_id=start_warp_id,
+      reference_appearance_id=start_warp_id)
 
   # Get training IDs to evaluate.
   train_eval_iter = datasource.create_iterator(datasource.train_ids, batch_size=0)
@@ -415,8 +435,8 @@ def main(argv):
                     save_dir=save_dir,
                     datasource=datasource,
                     model=model,
-                    edit_warp_id=datasource.get_warp_id(format(18, '06d')))
-
+                    start_warp_id=start_warp_id,
+                    end_warp_id=end_warp_id)
 
   if save_dir:
     delete_old_renders(renders_dir, eval_config.max_render_checkpoints)

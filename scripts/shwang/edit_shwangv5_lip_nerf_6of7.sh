@@ -11,7 +11,7 @@ EXPERIMENT_PATH_WITH_TIME=${EXPERIMENT_PATH}"_"$(date +"%d-%m-%Y_%T")
 LOG_FILENAME=$REF_EXPERIMENT_PATH/edit_log_nerf_$(date +"%d-%m-%Y_%T").txt
 
 #TEXT_PROMPTS=("happy face" "sad face" "surprised face" "fearful face" "disgusted face" "angry face" "face with contempt" "crying face" "happily surprised face" "sleeping face")
-TEXT_PROMPTS=("happily surprised face")
+TEXT_PROMPTS=("crying face")
 REFERENCE_WARP_ID=9
 for i in "${!TEXT_PROMPTS[@]}"; do
     EXPERIMENT_PATH_WITH_TIME=${EXPERIMENT_PATH}"_"$(date +"%d-%m-%Y_%T")

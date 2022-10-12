@@ -399,14 +399,14 @@ def main(argv):
   optimizer_def = optim.Adam(0.0)
   
   #### Optional - change warp_embed to adjust the object's position ###
-  out =  str(checkpoint_dir).split("_")
-  ref_checkpoint_dir = out[0] + "_" + re.sub('edit', '', out[1]) + out[2] + '/checkpoints'
-  ref_state = checkpoints.restore_checkpoint(ref_checkpoint_dir, target=None)
-  ref_params = ref_state['optimizer']['target']
-  params = model_utils.inject_params_nerf(ref_params, params,
-  reference_warp_id = 9, 
-  reference_hyper_id=None)
-  del ref_params, ref_state
+  # out =  str(checkpoint_dir).split("_")
+  # ref_checkpoint_dir = out[0] + "_" + re.sub('edit', '', out[1]) + out[2] + '/checkpoints'
+  # ref_state = checkpoints.restore_checkpoint(ref_checkpoint_dir, target=None)
+  # ref_params = ref_state['optimizer']['target']
+  # params = model_utils.inject_params_nerf(ref_params, params,
+  # reference_warp_id = 9, 
+  # reference_hyper_id=None)
+  # del ref_params, ref_state
 
   if train_config.use_weight_norm:
     optimizer_def = optim.WeightNorm(optimizer_def)

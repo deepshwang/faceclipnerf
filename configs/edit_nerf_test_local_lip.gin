@@ -62,7 +62,7 @@ TrainConfig.hyper_alpha_schedule = {
   ],
 }
 
-EditingNerfModel.dense_fn = @LipDense
+EditingNerfModel.dense_fn = @nn.Dense
 
 EditingNerfModel.hyper_slice_method = 'bendy_sheet'
 EditingNerfModel.hyper_sheet_mlp_cls = @HyperSheetMLP
@@ -96,7 +96,7 @@ TrainConfig.use_weight_norm = False
 TrainConfig.use_elastic_loss = False
 TrainConfig.use_background_loss = False
 TrainConfig.background_loss_weight = 1.0
-TrainConfig.use_lipschitz_loss = True
+TrainConfig.use_lipschitz_loss = False 
 TrainConfig.lipschitz_loss_weight = 0.0000001
 
 TrainConfig.use_warp_reg_loss = True

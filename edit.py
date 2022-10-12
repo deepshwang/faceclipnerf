@@ -368,7 +368,7 @@ def main(argv):
       for j in range(4):
         mask_img = model_out['fine']['mask'][0, ..., j]
         image_utils.save_image(val_rgb_dir / "testie_{}_mask_{}.png".format(str(step), str(j)), image_utils.image_to_uint8(jnp.reshape(mask_img, batch['rgb'].shape[1:3]))) 
-      training.save_checkpoint(checkpoint_dir, state, keep=2)
+      training.save_checkpoint(checkpoint_dir, state, keep=10000000)
 
     if step % train_config.log_every == 0 and jax.process_index() == 0:
       # Only log via process 0.
@@ -386,7 +386,8 @@ def main(argv):
     time_tracker.tic('data', 'total')
 
   if train_config.max_steps % train_config.save_every != 0:
-    training.save_checkpoint(checkpoint_dir, state, keep=2)
+    #training.save_checkpoint(checkpoint_dir, state, keep=2)
+    training.save_checkpoint(checkpoint_dir, state, keep=1000000)
 
 
 if __name__ == '__main__':

@@ -13,7 +13,7 @@
 # limitations under the License.
 
 """Warp fields."""
-from typing import Any, Iterable, Optional, Dict
+from typing import Any, Iterable, Optional, Dict, Callable
 
 from flax import linen as nn
 import gin
@@ -160,6 +160,8 @@ class SE3Field(nn.Module):
   hyper_width: int = 0
   hyper_init: Optional[types.Initializer] = None
 
+  dense_fn: Callable = nn.Dense
+
   def setup(self):
     self.trunk = modules.MLP(
         depth=self.trunk_depth,
@@ -167,7 +169,8 @@ class SE3Field(nn.Module):
         hidden_activation=self.activation,
         hidden_norm=self.norm,
         hidden_init=self.default_init,
-        skips=self.skips)
+        skips=self.skips,
+        dense_fn=self.dense_fn)
 
     branches = {
         'w':
@@ -178,7 +181,8 @@ class SE3Field(nn.Module):
                 hidden_norm=self.norm,
                 hidden_init=self.default_init,
                 output_init=self.rotation_init,
-                output_channels=3),
+                output_channels=3,
+                dense_fn=self.dense_fn),
         'v':
             modules.MLP(
                 depth=self.translation_depth,
@@ -187,7 +191,8 @@ class SE3Field(nn.Module):
                 hidden_norm=self.norm,
                 hidden_init=self.default_init,
                 output_init=self.translation_init,
-                output_channels=3),
+                output_channels=3,
+                dense_fn=self.dense_fn),
     }
 
     # Note that this must be done this way instead of using mutable operations.

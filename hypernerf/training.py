@@ -285,8 +285,11 @@ def train_step(model: models.NerfModel,
       loss += scalar_params.hyper_reg_loss_weight * hyper_reg_loss
 
     if use_lipschitz_loss:
-      lip_constants = utils.find_params_by_node_name(params['model']['nerf_mlps_{}'.format(level)], 'lip_c')
-      loss += scalar_params.lipschitz_loss_weight * jnp.prod(jnp.array(lip_constants))
+      #lip_constants = utils.find_params_by_node_name(params['model']['nerf_mlps_{}'.format(level)], 'lip_c')
+      lip_constants = utils.find_params_by_node_name(params['model'], 'lip_c')
+      lip_loss = scalar_params.lipschitz_loss_weight * jnp.prod(jax.nn.softplus(jnp.array(lip_constants)))
+      loss += lip_loss
+      stats['loss/lipschitz'] = lip_loss
 
     if 'warp_jacobian' in model_out:
       jacobian = model_out['warp_jacobian']

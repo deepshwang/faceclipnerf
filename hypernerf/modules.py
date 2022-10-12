@@ -335,6 +335,8 @@ class HyperSheetMLP(nn.Module):
   output_init: types.Initializer = jax.nn.initializers.normal(1e-5)
   # output_init: types.Initializer = jax.nn.initializers.glorot_uniform()
 
+  dense_fn: Callable = nn.Dense
+
   use_residual: bool = False
 
   @nn.compact
@@ -347,7 +349,8 @@ class HyperSheetMLP(nn.Module):
               skips=self.skips,
               hidden_init=self.hidden_init,
               output_channels=self.output_channels,
-              output_init=self.output_init)
+              output_init=self.output_init,
+              dense_fn=self.dense_fn)
     if self.use_residual:
       return mlp(inputs) + embed
     else:

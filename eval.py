@@ -430,7 +430,6 @@ def main(argv):
   #train_eval_ids = utils.strided_subset(
   #    datasource.train_ids, eval_config.num_train_eval)
   train_eval_ids = datasource.train_ids
-  #import ipdb; ipdb.set_trace()
   train_eval_iter = datasource.create_iterator(train_eval_ids, batch_size=0)
   #val_eval_ids = utils.strided_subset(
   #    datasource.val_ids, eval_config.num_val_eval)

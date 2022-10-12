@@ -208,7 +208,6 @@ def main(argv):
       embeddings_dict=datasource.embeddings_dict,
       near=datasource.near,
       far=datasource.far)
-  
   # Create Jax iterator.
   logging.info('Creating dataset iterator.')
   train_iter = datasource.create_iterator(
@@ -261,7 +260,8 @@ def main(argv):
       warp_reg_loss_alpha=train_config.warp_reg_loss_alpha,
       warp_reg_loss_scale=train_config.warp_reg_loss_scale,
       background_loss_weight=train_config.background_loss_weight,
-      hyper_reg_loss_weight=train_config.hyper_reg_loss_weight)
+      hyper_reg_loss_weight=train_config.hyper_reg_loss_weight,
+      lipschitz_loss_weight=train_config.lipschitz_loss_weight)
   state = checkpoints.restore_checkpoint(checkpoint_dir, state)
   init_step = state.optimizer.state.step + 1
   state = jax_utils.replicate(state, devices=devices)

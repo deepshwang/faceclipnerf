@@ -16,8 +16,8 @@ target_text_prompt = 'disgusted face'
 #target_text_prompt = 'crying face'
 #target_text_prompt = 'happily surprised face'
 #target_text_prompt = 'sleeping face'
-#chunk_size = 2025 # one-shot chunk_size = 480 * 270 = 129600 (H*W)
-chunk_size = 2527 # one-shot chunk_size = 480 * 270 = 129600 (H*W)
+chunk_size = 2025 # one-shot chunk_size = 480 * 270 = 129600 (H*W)
+#chunk_size = 2527 # one-shot chunk_size = 480 * 270 = 129600 (H*W)
 
 # Loss lambdas
 lambda_refrgb = 0.5
